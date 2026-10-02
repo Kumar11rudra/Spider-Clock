@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Spider Clock - An elegant, animated analog real-time clock featuring an intricate spider-web dial and hanging spider, synchronized with your local system time.">
+  <meta name="author" content="Kumar11rudra">
+  <meta name="theme-color" content="#0a0b10">
+  <title>Spider Clock</title>
+  <style>
+    /* ==========================================================================
+       Spider Clock - Pure CSS Styling (Zero External Dependencies)
+       ========================================================================== */
+
+    :root {
+      --bg-dark: #07080b;
+      --header-bg: #0d0f14;
+      --card-bg: rgba(18, 21, 28, 0.85);
+      --border-color: rgba(255, 140, 0, 0.2);
+      --accent-orange: #ff7700;
+      --accent-gold: #ffb830;
+      --accent-glow: rgba(255, 119, 0, 0.45);
+      --spider-white: #f8fafc;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(211, 84, 0, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 80% 85%, rgba(135, 54, 0, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #07080b 0%, #0d0e14 100%);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* --------------------------------------------------------------------------
+       Header
+       -------------------------------------------------------------------------- */
+    .header {
+      width: 100%;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 0 6px var(--accent-glow));
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    /* --------------------------------------------------------------------------
+       Main Content Layout
+       -------------------------------------------------------------------------- */
+    .main-container {
+      flex: 1;
+      width: 100%;
+      max-width: 900px;
+      padding: 28px 20px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    /* --------------------------------------------------------------------------
+       Clock Outer Housing & Dial
+       -------------------------------------------------------------------------- */
+    .clock-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px;
+    }
+
+    .clock-bezel {
+      width: min(84vw, 420px);
+      height: min(84vw, 420px);
+      border-radius: 50%;
+      position: relative;
+      background: linear-gradient(145deg, #1f232b, #090a0d);
+      box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.9),
+        0 0 35px rgba(255, 119, 0, 0.25),
+        inset 0 2px 4px rgba(255, 255, 255, 0.15),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.85);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Bezel metallic rim */
+    .clock-bezel::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 184, 48, 0.3);
+      pointer-events: none;
+    }
+
+    /* The Brown/Orange Gradient Clock Dial */
+    .clock-dial {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(
+        circle at 50% 50%,
+        #ff7b00 0%,
+        #d35400 24%,
+        #873600 52%,
+        #441800 78%,
+        #1d0800 94%,
+        #0f0400 100%
+      );
+      box-shadow: 
+        inset 0 0 40px rgba(0, 0, 0, 0.85),
+        inset 0 0 12px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    /* Dial depth overlay */
+    .dial-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* --------------------------------------------------------------------------
+       Spider Web SVG Layer
+       -------------------------------------------------------------------------- */
+    .web-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* --------------------------------------------------------------------------
+       Dial Numerals & Tick Marks
+       -------------------------------------------------------------------------- */
+    .dial-numbers {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .numeral {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      top: calc(50% - 18px);
+      left: calc(50% - 18px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.05rem, 3.8vw, 1.35rem);
+      font-weight: 700;
+      color: #fff6e5;
+      text-shadow: 
+        0 0 6px rgba(0, 0, 0, 0.95),
+        0 1px 3px rgba(0, 0, 0, 0.95),
+        0 0 12px rgba(255, 175, 48, 0.45);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tick-mark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: 50% 0;
+      pointer-events: none;
+    }
+
+    .tick-mark.hour-tick {
+      width: 2.5px;
+      height: 10px;
+      margin-left: -1.25px;
+      background: #ffb830;
+      box-shadow: 0 0 4px rgba(255, 184, 48, 0.6);
+    }
+
+    .tick-mark.minute-tick {
+      width: 1px;
+      height: 5px;
+      margin-left: -0.5px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* --------------------------------------------------------------------------
+       Spider & Silk Thread Layer
+       -------------------------------------------------------------------------- */
+    .spider-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spider-container {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 51%;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .spider-thread {
+      width: 1.5px;
+      flex: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.85) 65%,
+        #ffffff 100%
+      );
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+      position: relative;
+    }
+
+    .spider-body-wrapper {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spider-float 4.2s ease-in-out infinite;
+      transform-origin: top center;
+    }
+
+    @keyframes spider-float {
+      0%, 100% {
+        transform: rotate(0deg) translateY(0px);
+      }
+      25% {
+        transform: rotate(2deg) translateY(-2px);
+      }
+      50% {
+        transform: rotate(-1.5deg) translateY(2px);
+      }
+      75% {
+        transform: rotate(1deg) translateY(-1px);
+      }
+    }
+
+    .spider-svg {
+      width: 100%;
+      height: 100%;
+      filter: 
+        drop-shadow(0 4px 8px rgba(0, 0, 0, 0.75))
+        drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+      transition: filter 0.3s ease;
+    }
+
+    .spider-container:hover .spider-svg {
+      filter: 
+        drop-shadow(0 6px 12px rgba(0, 0, 0, 0.85))
+        drop-shadow(0 0 12px rgba(255, 255, 255, 0.75));
+    }
+
+    /* Dynamic reaction animation on spider click */
+    .spider-container.scurrying {
+      animation: spider-reaction 1.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    @keyframes spider-reaction {
+      0% { transform: translateX(-50%) translateY(0); }
+      30% { transform: translateX(-50%) translateY(-28px); }
+      60% { transform: translateX(-50%) translateY(14px); }
+      85% { transform: translateX(-50%) translateY(-4px); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+
+    /* --------------------------------------------------------------------------
+       Clock Hands
+       -------------------------------------------------------------------------- */
+    .clock-hands {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .hand {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: 50% 100%;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    /* Hour Hand */
+    .hand.hour {
+      width: 7px;
+      height: 24%;
+      margin-left: -3.5px;
+      margin-top: -24%;
+      background: linear-gradient(180deg, #fff7ed 0%, #ffc278 70%, #d97706 100%);
+      box-shadow: 
+        0 0 8px rgba(0, 0, 0, 0.8),
+        0 0 6px rgba(255, 184, 48, 0.4);
+      z-index: 6;
+      border-radius: 4px 4px 1px 1px;
+    }
+
+    .hand.hour::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 2px;
+      right: 2px;
+      bottom: 12px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 2px;
+    }
+
+    /* Minute Hand */
+    .hand.minute {
+      width: 4.5px;
+      height: 35%;
+      margin-left: -2.25px;
+      margin-top: -35%;
+      background: linear-gradient(180deg, #ffffff 0%, #ffe4bc 80%, #ea580c 100%);
+      box-shadow: 
+        0 0 10px rgba(0, 0, 0, 0.85),
+        0 0 8px rgba(255, 140, 0, 0.5);
+      z-index: 7;
+      border-radius: 3px 3px 1px 1px;
+    }
+
+    .hand.minute::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 1px;
+      right: 1px;
+      bottom: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 1px;
+    }
+
+    /* Second Hand */
+    .hand.second {
+      width: 2px;
+      height: 44%;
+      margin-left: -1px;
+      margin-top: -36%;
+      background: #ff3b00;
+      box-shadow: 
+        0 0 8px rgba(255, 59, 0, 0.85),
+        0 0 14px rgba(255, 119, 0, 0.65);
+      z-index: 8;
+      transform-origin: 50% 81.8%; /* 36 / 44 */
+      border-radius: 1px;
+    }
+
+    /* Second hand counterbalance tail */
+    .hand.second::after {
+      content: "";
+      position: absolute;
+      bottom: -16px;
+      left: -4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff3b00;
+      box-shadow: 0 0 6px rgba(255, 59, 0, 0.75);
+    }
+
+    /* Center Pin & Cap */
+    .clock-pin {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      top: calc(50% - 7px);
+      left: calc(50% - 7px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff 0%, #f59e0b 50%, #78350f 100%);
+      box-shadow: 
+        0 0 6px rgba(0, 0, 0, 0.9),
+        0 0 8px rgba(255, 184, 48, 0.6);
+      z-index: 9;
+      pointer-events: none;
+    }
+
+    /* --------------------------------------------------------------------------
+       Info & Control Panel Card
+       -------------------------------------------------------------------------- */
+    .control-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px 22px;
+      box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .time-display-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 14px;
+    }
+
+    .digital-clock {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+      text-shadow: 0 0 12px rgba(255, 119, 0, 0.4);
+    }
+
+    .digital-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .ampm-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      background: rgba(255, 119, 0, 0.15);
+      border: 1px solid rgba(255, 119, 0, 0.35);
+      border-radius: 6px;
+      color: var(--accent-gold);
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .action-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 119, 0, 0.2);
+      border-color: rgba(255, 119, 0, 0.4);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 119, 0, 0.25);
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+    }
+
+    .action-btn.active {
+      background: rgba(255, 119, 0, 0.25);
+      border-color: var(--accent-orange);
+      color: #ffffff;
+    }
+
+    /* --------------------------------------------------------------------------
+       Footer
+       -------------------------------------------------------------------------- */
+    .footer {
+      width: 100%;
+      text-align: center;
+      padding: 16px 20px 24px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .footer a {
+      color: var(--accent-gold);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    /* --------------------------------------------------------------------------
+       Responsive Tweaks
+       -------------------------------------------------------------------------- */
+    @media (max-width: 480px) {
+      .header {
+        padding: 12px 16px;
+      }
+      .brand-title {
+        font-size: 1.15rem;
+      }
+      .status-badge span:last-child {
+        display: none;
+      }
+      .main-container {
+        padding: 16px 12px 30px;
+        gap: 20px;
+      }
+      .control-card {
+        padding: 16px 18px;
+      }
+      .digital-clock {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       Header
+       ======================================================================== -->
+  <header class="header">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" stroke="#ff7700" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <path d="M16 2 L16 30 M2 16 L30 16 M6 6 L26 26 M6 26 L26 6" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <ellipse cx="16" cy="16" rx="4" ry="5.5" fill="#f8fafc"/>
+        <circle cx="16" cy="11" r="2.8" fill="#f8fafc"/>
+        <path d="M13 14 Q9 10 7 13 M13 16 Q8 16 6 18 M13 18 Q8 21 7 24 M19 14 Q23 10 25 13 M19 16 Q24 16 26 18 M19 18 Q24 21 25 24" 
+              stroke="#f8fafc" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <h1 class="brand-title">Spider Clock</h1>
+    </div>
+
+    <div class="header-badges">
+      <div class="status-badge" title="Running offline with zero external dependencies">
+        <span class="status-indicator"></span>
+        <span>Offline Ready</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       Main Content
+       ======================================================================== -->
+  <main class="main-container">
+    <div class="clock-wrapper">
+      <div class="clock-bezel">
+        <div class="clock-dial" id="clock-dial">
+          <div class="dial-overlay"></div>
+
+          <!-- Spider Web SVG (Geometric Radial Sagging Web) -->
+          <svg class="web-svg" id="web-svg" viewBox="-200 -200 400 400" xmlns="http://www.w3.org/2000/svg">
+            <g id="web-spokes" stroke="rgba(255, 255, 255, 0.22)" stroke-width="1"></g>
+            <g id="web-rings" stroke="rgba(255, 255, 255, 0.26)" stroke-width="1.1" fill="none"></g>
+            <g id="web-nodes" fill="rgba(255, 255, 255, 0.5)"></g>
+          </svg>
+
+          <!-- Dial Clock Numbers (1 - 12) & Minute Ticks -->
+          <div class="dial-numbers" id="dial-numbers"></div>
+
+          <!-- Spider & Silk Thread Layer -->
+          <div class="spider-layer">
+            <div class="spider-container" id="spider-container" title="Click or hover to interact with the spider">
+              <div class="spider-thread"></div>
+              <div class="spider-body-wrapper">
+                <svg class="spider-svg" viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Gradient Definitions for Spider -->
+                  <defs>
+                    <radialGradient id="spiderBodyGrad" cx="40%" cy="35%" r="65%">
+                      <stop offset="0%" stop-color="#ffffff"/>
+                      <stop offset="60%" stop-color="#e2e8f0"/>
+                      <stop offset="100%" stop-color="#cbd5e1"/>
+                    </radialGradient>
+                    <radialGradient id="spiderHeadGrad" cx="35%" cy="30%" r="65%">
+                      <stop offset="0%" stop-color="#ffffff"/>
+                      <stop offset="70%" stop-color="#e2e8f0"/>
+                      <stop offset="100%" stop-color="#94a3b8"/>
+                    </radialGradient>
+                  </defs>
+
+                  <!-- 8 Anatomical Spider Legs (Ivory White with joints) -->
+                  <!-- Left Legs (L1 to L4) -->
+                  <g stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                    <!-- L1 Front -->
+                    <path d="M -6,-5 Q -18,-24 -32,-18" />
+                    <!-- L2 Mid-front -->
+                    <path d="M -8,-1 Q -24,-12 -36,-1" />
+                    <!-- L3 Mid-back -->
+                    <path d="M -8,4 Q -26,8 -34,22" />
+                    <!-- L4 Back -->
+                    <path d="M -6,9 Q -20,24 -26,38" />
+
+                    <!-- Right Legs (R1 to R4) -->
+                    <!-- R1 Front -->
+                    <path d="M 6,-5 Q 18,-24 32,-18" />
+                    <!-- R2 Mid-front -->
+                    <path d="M 8,-1 Q 24,-12 36,-1" />
+                    <!-- R3 Mid-back -->
+                    <path d="M 8,4 Q 26,8 34,22" />
+                    <!-- R4 Back -->
+                    <path d="M 6,9 Q 20,24 26,38" />
+                  </g>
+
+                  <!-- Delicate Pedipalps / Fangs -->
+                  <path d="M -3,-14 Q -6,-20 -3,-22 M 3,-14 Q 6,-20 3,-22" 
+                        stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+
+                  <!-- Cephalothorax (Head) -->
+                  <ellipse cx="0" cy="-8" rx="7.5" ry="6.5" fill="url(#spiderHeadGrad)"/>
+
+                  <!-- Abdomen (Rear Body) -->
+                  <ellipse cx="0" cy="11" rx="10.5" ry="14" fill="url(#spiderBodyGrad)"/>
+
+                  <!-- Subtle Abdomen Arachnid Chevron Markings -->
+                  <path d="M 0,2 L -4,6 M 0,2 L 4,6 M 0,9 L -5,14 M 0,9 L 5,14 M 0,16 L -4,20 M 0,16 L 4,20" 
+                        stroke="rgba(148, 163, 184, 0.45)" stroke-width="1.3" stroke-linecap="round"/>
+
+                  <!-- Spider Eyes (Tiny glistening ruby obsidian accents) -->
+                  <circle cx="-2.5" cy="-11.5" r="1.1" fill="#b91c1c"/>
+                  <circle cx="2.5" cy="-11.5" r="1.1" fill="#b91c1c"/>
+                  <circle cx="-5" cy="-9.5" r="0.8" fill="#7f1d1d"/>
+                  <circle cx="5" cy="-9.5" r="0.8" fill="#7f1d1d"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analog Clock Hands -->
+          <div class="clock-hands">
+            <div class="hand hour" id="hour-hand"></div>
+            <div class="hand minute" id="minute-hand"></div>
+            <div class="hand second" id="second-hand"></div>
+            <div class="clock-pin"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info & Control Card -->
+    <div class="control-card">
+      <div class="time-display-row">
+        <div>
+          <div class="digital-clock" id="digital-clock">00:00:00</div>
+          <div class="digital-date" id="digital-date">System Time Synchronized</div>
+        </div>
+        <div class="ampm-badge" id="ampm-badge">AM</div>
+      </div>
+
+      <div class="controls-row">
+        <button class="action-btn active" id="btn-motion-mode" type="button" title="Switch between continuous sweep and mechanical tick">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span id="motion-mode-text">Smooth Sweep</span>
+        </button>
+
+        <button class="action-btn" id="btn-interact-spider" type="button" title="Make the spider scurry along its silk thread">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v8m0 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm-6 2 4 4m8-4-4 4m-8 6 4-2m8 2-4-2"/>
+          </svg>
+          <span>Drop Spider</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       Footer
+       ======================================================================== -->
+  <footer class="footer">
+    <p>Spider Clock &bull; Pure HTML5, CSS3 &amp; JavaScript &bull; <a href="https://github.com/Kumar11rudra/Spider-Clock" target="_blank" rel="noopener">GitHub Repository</a></p>
+  </footer>
+
+  <!-- ========================================================================
+       Spider Clock JavaScript Logic (Self-Contained, Zero External CDN)
+       ======================================================================== -->
+  <script>
+    (function () {
+      "use strict";
+
+      // ----------------------------------------------------------------------
+      // DOM Elements
+      // ----------------------------------------------------------------------
+      const hourHand = document.getElementById("hour-hand");
+      const minuteHand = document.getElementById("minute-hand");
+      const secondHand = document.getElementById("second-hand");
+      const digitalClock = document.getElementById("digital-clock");
+      const digitalDate = document.getElementById("digital-date");
+      const ampmBadge = document.getElementById("ampm-badge");
+      const dialNumbersContainer = document.getElementById("dial-numbers");
+      const webSpokesGroup = document.getElementById("web-spokes");
+      const webRingsGroup = document.getElementById("web-rings");
+      const webNodesGroup = document.getElementById("web-nodes");
+      const spiderContainer = document.getElementById("spider-container");
+      const btnMotionMode = document.getElementById("btn-motion-mode");
+      const motionModeText = document.getElementById("motion-mode-text");
+      const btnInteractSpider = document.getElementById("btn-interact-spider");
+
+      // State
+      let isSmoothSweep = true;
+      let lastSecond = -1;
+
+      // ----------------------------------------------------------------------
+      // 1. Generate Spider Web SVG (Geometric Radial Catenary Web)
+      // ----------------------------------------------------------------------
+      function buildSpiderWeb() {
+        const spokeCount = 12; // Aligns with 12 hour axes
+        const ringRadii = [28, 55, 84, 115, 146, 178];
+        const angles = [];
+
+        // Build 12 Radial Spokes
+        for (let i = 0; i < spokeCount; i++) {
+          const angle = (i * 360 / spokeCount) * (Math.PI / 180);
+          angles.push(angle);
+          const x2 = 188 * Math.sin(angle);
+          const y2 = -188 * Math.cos(angle);
+
+          const spokeLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          spokeLine.setAttribute("x1", "0");
+          spokeLine.setAttribute("y1", "0");
+          spokeLine.setAttribute("x2", x2.toFixed(2));
+          spokeLine.setAttribute("y2", y2.toFixed(2));
+          webSpokesGroup.appendChild(spokeLine);
+        }
+
+        // Build Concentric Catenary Silk Rings
+        ringRadii.forEach(r => {
+          let pathData = "";
+          for (let i = 0; i < spokeCount; i++) {
+            const a1 = angles[i];
+            const a2 = angles[(i + 1) % spokeCount];
+
+            const x1 = r * Math.sin(a1);
+            const y1 = -r * Math.cos(a1);
+            const x2 = r * Math.sin(a2);
+            const y2 = -r * Math.cos(a2);
+
+            // Catenary sag center point (slightly pulled towards center by factor 0.91)
+            const midAngle = (a1 + (i === spokeCount - 1 ? a1 + (2 * Math.PI / spokeCount) : a2)) / 2;
+            const sagRadius = r * 0.91;
+            const cx = sagRadius * Math.sin(midAngle);
+            const cy = -sagRadius * Math.cos(midAngle);
+
+            if (i === 0) {
+              pathData += `M ${x1.toFixed(2)} ${y1.toFixed(2)} `;
+            }
+            pathData += `Q ${cx.toFixed(2)} ${cy.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)} `;
+
+            // Subtle dew nodes on web intersections
+            if (r > 60 && (i % 2 === 0)) {
+              const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+              node.setAttribute("cx", x1.toFixed(2));
+              node.setAttribute("cy", y1.toFixed(2));
+              node.setAttribute("r", "1.4");
+              webNodesGroup.appendChild(node);
+            }
+          }
+
+          const ringPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          ringPath.setAttribute("d", pathData);
+          webRingsGroup.appendChild(ringPath);
+        });
+      }
+
+      // ----------------------------------------------------------------------
+      // 2. Build Clock Numbers (1-12) & Minute Tick Marks
+      // ----------------------------------------------------------------------
+      function buildDialNumerals() {
+        const radiusPercent = 40; // Percentage from center to numeral center
+
+        for (let i = 1; i <= 12; i++) {
+          const angle = (i * 30) * (Math.PI / 180);
+          // Angle 0 is top (12 o clock)
+          const xPercent = 50 + radiusPercent * Math.sin(angle);
+          const yPercent = 50 - radiusPercent * Math.cos(angle);
+
+          const numEl = document.createElement("div");
+          numEl.className = "numeral";
+          numEl.textContent = i;
+          numEl.style.left = `calc(${xPercent.toFixed(2)}% - 18px)`;
+          numEl.style.top = `calc(${yPercent.toFixed(2)}% - 18px)`;
+          dialNumbersContainer.appendChild(numEl);
+        }
+
+        // Add 60 peripheral tick marks
+        for (let i = 0; i < 60; i++) {
+          const tick = document.createElement("div");
+          const isHour = i % 5 === 0;
+          tick.className = `tick-mark ${isHour ? "hour-tick" : "minute-tick"}`;
+          tick.style.transform = `rotate(${i * 6}deg) translateY(-186px)`;
+          dialNumbersContainer.appendChild(tick);
+        }
+      }
+
+      // ----------------------------------------------------------------------
+      // 3. Accurate Real-Time Clock Engine
+      // ----------------------------------------------------------------------
+      function updateClock() {
+        const now = new Date();
+        const ms = now.getMilliseconds();
+        const sec = now.getSeconds();
+        const min = now.getMinutes();
+        const hr = now.getHours();
+
+        // Calculate Angle Degrees
+        let secDeg, minDeg, hrDeg;
+
+        if (isSmoothSweep) {
+          // Smooth 60fps/120fps sweep motion
+          const fractionalSec = sec + ms / 1000;
+          const fractionalMin = min + fractionalSec / 60;
+          const fractionalHr = (hr % 12) + fractionalMin / 60;
+
+          secDeg = fractionalSec * 6;
+          minDeg = fractionalMin * 6;
+          hrDeg = fractionalHr * 30;
+        } else {
+          // Classic 1-second mechanical step motion
+          const fractionalMin = min + sec / 60;
+          const fractionalHr = (hr % 12) + fractionalMin / 60;
+
+          secDeg = sec * 6;
+          minDeg = fractionalMin * 6;
+          hrDeg = fractionalHr * 30;
+        }
+
+        // Apply Transform Rotations
+        hourHand.style.transform = `rotate(${hrDeg}deg)`;
+        minuteHand.style.transform = `rotate(${minDeg}deg)`;
+        secondHand.style.transform = `rotate(${secDeg}deg)`;
+
+        // Update Digital Displays once per second
+        if (sec !== lastSecond) {
+          lastSecond = sec;
+
+          // Format Hours for 12-hour clock
+          const displayHr = hr % 12 || 12;
+          const padHr = String(displayHr).padStart(2, "0");
+          const padMin = String(min).padStart(2, "0");
+          const padSec = String(sec).padStart(2, "0");
+          const isPM = hr >= 12;
+
+          digitalClock.textContent = `${padHr}:${padMin}:${padSec}`;
+          ampmBadge.textContent = isPM ? "PM" : "AM";
+
+          // Format Date
+          const options = { weekday: "long", year: "numeric", month: "short", day: "numeric" };
+          digitalDate.textContent = now.toLocaleDateString(undefined, options);
+        }
+
+        // Loop smoothly with requestAnimationFrame
+        requestAnimationFrame(updateClock);
+      }
+
+      // ----------------------------------------------------------------------
+      // 4. Interactive Spider Behaviors
+      // ----------------------------------------------------------------------
+      function triggerSpiderReaction() {
+        if (!spiderContainer.classList.contains("scurrying")) {
+          spiderContainer.classList.add("scurrying");
+          setTimeout(() => {
+            spiderContainer.classList.remove("scurrying");
+          }, 1250);
+        }
+      }
+
+      spiderContainer.addEventListener("click", triggerSpiderReaction);
+      btnInteractSpider.addEventListener("click", triggerSpiderReaction);
+
+      // ----------------------------------------------------------------------
+      // 5. Sweep vs Step Mode Toggle
+      // ----------------------------------------------------------------------
+      btnMotionMode.addEventListener("click", function () {
+        isSmoothSweep = !isSmoothSweep;
+        if (isSmoothSweep) {
+          btnMotionMode.classList.add("active");
+          motionModeText.textContent = "Smooth Sweep";
+        } else {
+          btnMotionMode.classList.remove("active");
+          motionModeText.textContent = "Classic Tick";
+        }
+      });
+
+      // ----------------------------------------------------------------------
+      // Initialization
+      // ----------------------------------------------------------------------
+      buildSpiderWeb();
+      buildDialNumerals();
+      requestAnimationFrame(updateClock);
+    })();
+  </script>
+</body>
+</html>
