@@ -128,4 +128,4 @@ Spider Clock is designed for easy customization:
 
 This project is open-source and available under the [MIT License](LICENSE).
 
-Created with 🕸️ by [Kumar11rudra](https://github.com/Kumar11rudra).
+Created with 🕸️ by Anil ❤️
